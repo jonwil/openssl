@@ -129,7 +129,11 @@ sub cbc
 	&mov(&DWP($data_off,"esp","",0),	"eax");	# put in array for call
 	&mov(&DWP($data_off+4,"esp","",0),	"ebx");	#
 
-	&call($enc_func);
+	&call	(&label("pic_point0"));
+	&set_label("pic_point0");
+	&blindpop("ebx");
+	&add	("ebx", "\$_GLOBAL_OFFSET_TABLE_+[.-" . &label("pic_point0") . "]");
+	&call("$enc_func\@PLT");
 
 	&mov("eax",	&DWP($data_off,"esp","",0));
 	&mov("ebx",	&DWP($data_off+4,"esp","",0));
@@ -192,7 +196,11 @@ sub cbc
 	&mov(&DWP($data_off,"esp","",0),	"eax");	# put in array for call
 	&mov(&DWP($data_off+4,"esp","",0),	"ebx");	#
 
-	&call($enc_func);
+	&call	(&label("pic_point1"));
+	&set_label("pic_point1");
+	&blindpop("ebx");
+	&add	("ebx", "\$_GLOBAL_OFFSET_TABLE_+[.-" . &label("pic_point1") . "]");
+	&call("$enc_func\@PLT");
 
 	&mov("eax",	&DWP($data_off,"esp","",0));
 	&mov("ebx",	&DWP($data_off+4,"esp","",0));
@@ -225,7 +233,11 @@ sub cbc
 	&mov(&DWP($data_off,"esp","",0),	"eax");	# put back
 	&mov(&DWP($data_off+4,"esp","",0),	"ebx");	#
 
-	&call($dec_func);
+	&call	(&label("pic_point2"));
+	&set_label("pic_point2");
+	&blindpop("ebx");
+	&add	("ebx", "\$_GLOBAL_OFFSET_TABLE_+[.-" . &label("pic_point2") . "]");
+	&call("$dec_func\@PLT");
 
 	&mov("eax",	&DWP($data_off,"esp","",0));	# get return
 	&mov("ebx",	&DWP($data_off+4,"esp","",0));	#
@@ -268,7 +280,11 @@ sub cbc
 	&mov(&DWP($data_off,"esp","",0),	"eax");	# put back
 	&mov(&DWP($data_off+4,"esp","",0),	"ebx");	#
 
-	&call($dec_func);
+	&call	(&label("pic_point3"));
+	&set_label("pic_point3");
+	&blindpop("ebx");
+	&add	("ebx", "\$_GLOBAL_OFFSET_TABLE_+[.-" . &label("pic_point3") . "]");
+	&call("$dec_func\@PLT");
 
 	&mov("eax",	&DWP($data_off,"esp","",0));	# get return
 	&mov("ebx",	&DWP($data_off+4,"esp","",0));	#

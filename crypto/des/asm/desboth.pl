@@ -23,6 +23,11 @@ sub DES_encrypt3
 
 	&push("edi");
 
+	&call   (&label("pic_point0"));
+	&set_label("pic_point0");
+	&blindpop("ebp");
+	&add    ("ebp", "\$_GLOBAL_OFFSET_TABLE_+[.-" . &label("pic_point0") . "]");
+
 	&comment("");
 	&comment("Load the data words");
 	&mov($L,&DWP(0,"ebx","",0));
@@ -54,15 +59,21 @@ sub DES_encrypt3
 	&mov(&swtmp(2),	(DWC(($enc)?"1":"0")));
 	&mov(&swtmp(1),	"eax");
 	&mov(&swtmp(0),	"ebx");
-	&call("DES_encrypt2");
+	&exch("ebx", "ebp");
+	&call("DES_encrypt2\@PLT");
+	&exch("ebx", "ebp");
 	&mov(&swtmp(2),	(DWC(($enc)?"0":"1")));
 	&mov(&swtmp(1),	"edi");
 	&mov(&swtmp(0),	"ebx");
-	&call("DES_encrypt2");
+	&exch("ebx", "ebp");
+	&call("DES_encrypt2\@PLT");
+	&exch("ebx", "ebp");
 	&mov(&swtmp(2),	(DWC(($enc)?"1":"0")));
 	&mov(&swtmp(1),	"esi");
 	&mov(&swtmp(0),	"ebx");
-	&call("DES_encrypt2");
+	&exch("ebx", "ebp");
+	&call("DES_encrypt2\@PLT");
+	&exch("ebx", "ebp");
 
 	&stack_pop(3);
 	&mov($L,&DWP(0,"ebx","",0));

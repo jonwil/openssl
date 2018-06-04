@@ -38,6 +38,7 @@ GetOptions(\%options,
            'type=s',            # The result type, 'man' or 'html'
            'suffix:s',          # Suffix to add to the extension.
                                 # Only used with type=man
+           'mansection:s',      # Section to put to manpage in
            'remove',            # To remove files rather than writing them
            'dry-run|n',         # Only output file names on STDOUT
            'debug|D+',
@@ -100,7 +101,7 @@ foreach my $subdir (keys %{$options{subdir}}) {
         my $name = uc $podname;
         my $suffix = { man  => ".$podinfo{section}".($options{suffix} // ""),
                        html => ".html" } -> {$options{type}};
-        my $generate = { man  => "pod2man --name=$name --section=$podinfo{section} --center=OpenSSL --release=$config{version} \"$podpath\"",
+        my $generate = { man  => "pod2man --name=$name --section=$podinfo{section}$options{mansection} --center=OpenSSL --release=$config{version} \"$podpath\"",
                          html => "pod2html \"--podroot=$options{sourcedir}\" --htmldir=$updir --podpath=apps:crypto:ssl \"--infile=$podpath\" \"--title=$podname\""
                          } -> {$options{type}};
         my $output_dir = catdir($options{destdir}, "man$podinfo{section}");

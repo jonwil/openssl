@@ -170,6 +170,7 @@ sub ::file_end
 	if ($::macosx)	{ push (@out,"$tmp,2\n"); }
 	elsif ($::elf)	{ push (@out,"$tmp,4\n"); }
 	else		{ push (@out,"$tmp\n"); }
+	if ($::elf)	{ push (@out,".hidden\tOPENSSL_ia32cap_P\n"); }
     }
     push(@out,$initseg) if ($initseg);
 }
@@ -228,8 +229,23 @@ ___
     elsif ($::elf)
     {	$initseg.=<<___;
 .section	.init
+___
+        if ($::pic)
+	{   $initseg.=<<___;
+	pushl	%ebx
+	call	.pic_point0
+.pic_point0:
+	popl	%ebx
+	addl	\$_GLOBAL_OFFSET_TABLE_+[.-.pic_point0],%ebx
+	call	$f\@PLT
+	popl	%ebx
+___
+	}
+	else
+	{   $initseg.=<<___;
 	call	$f
 ___
+	}
     }
     elsif ($::coff)
     {   $initseg.=<<___;	# applies to both Cygwin and Mingw
