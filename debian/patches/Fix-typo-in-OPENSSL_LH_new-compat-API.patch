@@ -1,0 +1,27 @@
+From: Rich Salz <rsalz@openssl.org>
+Date: Mon, 24 Apr 2017 20:24:38 -0400
+Subject: Fix typo in OPENSSL_LH_new compat API
+
+CLA: trivial
+
+Reviewed-by: Matt Caswell <matt@openssl.org>
+Reviewed-by: Rich Salz <rsalz@openssl.org>
+(Merged from https://github.com/openssl/openssl/pull/3292)
+(cherry picked from commit b3c42fc2503a685a9e51427c1a83c8f09487389d)
+---
+ include/openssl/lhash.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/openssl/lhash.h b/include/openssl/lhash.h
+index 82d40c1e0e70..88d7d977b9ec 100644
+--- a/include/openssl/lhash.h
++++ b/include/openssl/lhash.h
+@@ -95,7 +95,7 @@ void OPENSSL_LH_node_usage_stats_bio(const OPENSSL_LHASH *lh, BIO *out);
+ #  define _LHASH OPENSSL_LHASH
+ #  define LHASH_NODE OPENSSL_LH_NODE
+ #  define lh_error OPENSSL_LH_error
+-#  define lh_new OPENSSL_lh_new
++#  define lh_new OPENSSL_LH_new
+ #  define lh_free OPENSSL_LH_free
+ #  define lh_insert OPENSSL_LH_insert
+ #  define lh_delete OPENSSL_LH_delete

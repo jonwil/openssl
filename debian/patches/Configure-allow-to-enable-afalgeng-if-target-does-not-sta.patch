@@ -1,0 +1,52 @@
+From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Date: Sun, 25 Feb 2018 11:44:24 +0100
+Subject: Configure: allow to enable afalgeng if target does not start with
+ Linux
+
+The Debian build system uses a `debian' target which sets CFLAGS and
+then we have for instance debian-amd64 which inherits from
+linux-x86_64 and debian [0]. So far so good.
+
+Unless there are different suggestions how to do this, I would keep it.
+However since the target name does not start with `linux', the build
+system does not enable the afalg engine. So in order to get enabled, I
+added a
+	`enable           => [ "afalgeng" ],'
+to the generic linux config which sets it explicit (as suggested by
+Richard Levitte). Having this set, we can check for it instead matching
+the target name.
+
+BTS: #888305
+upstream: https://github.com/openssl/openssl/pull/5169
+[0] https://sources.debian.org/src/openssl/1.1.0g-2/Configurations/20-debian.conf/
+Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+---
+ Configurations/10-main.conf | 1 +
+ Configure                   | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
+index b49f04b5d7c5..5840ff351aa5 100644
+--- a/Configurations/10-main.conf
++++ b/Configurations/10-main.conf
+@@ -643,6 +643,7 @@ sub vms_info {
+         shared_cflag     => "-fPIC -DOPENSSL_USE_NODELETE",
+         shared_ldflag    => "-Wl,-znodelete",
+         shared_extension => ".so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
++        enable           => [ "afalgeng" ],
+     },
+     "linux-generic64" => {
+         inherit_from     => [ "linux-generic32" ],
+diff --git a/Configure b/Configure
+index c0033643c61d..baeb3e3038f4 100755
+--- a/Configure
++++ b/Configure
+@@ -1303,7 +1303,7 @@ else               { $no_user_defines=1;    }
+ 
+ unless ($disabled{afalgeng}) {
+     $config{afalgeng}="";
+-    if ($target =~ m/^linux/) {
++    if (grep { $_ eq 'afalgeng' } @{$target{enable}}) {
+         my $minver = 4*10000 + 1*100 + 0;
+         if ($config{cross_compile_prefix} eq "") {
+             my $verstr = `uname -r`;

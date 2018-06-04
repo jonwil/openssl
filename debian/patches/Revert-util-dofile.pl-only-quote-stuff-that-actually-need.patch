@@ -1,0 +1,29 @@
+From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Date: Wed, 28 Mar 2018 14:05:53 +0200
+Subject: Revert "util/dofile.pl: only quote stuff that actually needs
+ quoting"
+
+This reverts commit 77ba00bc. We ended up without the quotes.
+
+BTS: #894282
+Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+---
+ util/dofile.pl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/util/dofile.pl b/util/dofile.pl
+index fc72989b0fd9..a932941cd5ad 100644
+--- a/util/dofile.pl
++++ b/util/dofile.pl
+@@ -99,9 +99,9 @@ package main;
+ # This adds quotes (") around the given string, and escapes any $, @, \,
+ # " and ' by prepending a \ to them.
+ sub quotify1 {
+-    my $s = my $orig = shift @_;
++    my $s = shift @_;
+     $s =~ s/([\$\@\\"'])/\\$1/g;
+-    $s ne $orig || $s =~ /\s/ ? '"'.$s.'"' : $s;
++    '"'.$s.'"';
+ }
+ 
+ # quotify_l LIST

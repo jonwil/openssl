@@ -1,0 +1,48 @@
+From: Benjamin Kaduk <bkaduk@akamai.com>
+Date: Mon, 16 Apr 2018 07:32:02 -0500
+Subject: Fix regression with session cache use by clients
+
+Commit d316cdcf6d8d6934663278145fe0a8191e14a8c5 introduced some extra
+checks into the session-cache update procedure, intended to prevent
+the caching of sessions whose resumption would lead to a handshake
+failure, since if the server is authenticating the client, there needs to
+be an application-set "session id context" to match up to the authentication
+context.  While that change is effective for its stated purpose, there
+was also some collatoral damage introduced along with the fix -- clients
+that set SSL_VERIFY_PEER are not expected to set an sid_ctx, and so
+their usage of session caching was erroneously denied.
+
+Fix the scope of the original commit by limiting it to only acting
+when the SSL is a server SSL.
+
+Reviewed-by: Matt Caswell <matt@openssl.org>
+(Merged from https://github.com/openssl/openssl/pull/5967)
+
+(cherry picked from commit c4fa1f7fc016919a5b3d4ea2aa66c77e0cc40c9d)
+---
+ ssl/ssl_lib.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/ssl/ssl_lib.c b/ssl/ssl_lib.c
+index 8a190d23e807..64f12f30e7f9 100644
+--- a/ssl/ssl_lib.c
++++ b/ssl/ssl_lib.c
+@@ -3035,12 +3035,13 @@ void ssl_update_cache(SSL *s, int mode)
+     /*
+      * If sid_ctx_length is 0 there is no specific application context
+      * associated with this session, so when we try to resume it and
+-     * SSL_VERIFY_PEER is requested, we have no indication that this is
+-     * actually a session for the proper application context, and the
+-     * *handshake* will fail, not just the resumption attempt.
+-     * Do not cache these sessions that are not resumable.
++     * SSL_VERIFY_PEER is requested to verify the client identity, we have no
++     * indication that this is actually a session for the proper application
++     * context, and the *handshake* will fail, not just the resumption attempt.
++     * Do not cache (on the server) these sessions that are not resumable
++     * (clients can set SSL_VERIFY_PEER without needing a sid_ctx set).
+      */
+-    if (s->session->sid_ctx_length == 0
++    if (s->server && s->session->sid_ctx_length == 0
+             && (s->verify_mode & SSL_VERIFY_PEER) != 0)
+         return;
+ 
