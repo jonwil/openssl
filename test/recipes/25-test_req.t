@@ -64,7 +64,7 @@ sub run_conversion {
 	open DATA, "req-check.err";
       SKIP: {
 	  plan skip_all => "skipping req conversion test for $reqfile"
-	      if grep /Unknown Public Key/, map { s/\R//; } <DATA>;
+	      if grep /Unknown Public Key/, map { s/\n//; } <DATA>;
 
 	  tconversion("req", $reqfile, @openssl_args);
 	}

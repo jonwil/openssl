@@ -9,7 +9,7 @@
 
 ##  Configure -- OpenSSL source tree configuration script
 
-use 5.10.0;
+use 5.8.4;
 use strict;
 use FindBin;
 use lib "$FindBin::Bin/util/perl";
@@ -190,18 +190,27 @@ sub read_config;
 # chosen target and any target it inherits from.
 sub resolve_config;
 
+sub abs2relx {
+    my $path = shift;
+    my $base = shift;
+    my $ret = abs2rel($path,$base);
+    if ($ret eq '') {
+        $ret = '.';
+    }
+    return $ret;
+}
 
 # Information collection #############################################
 
 # Unified build supports separate build dir
 my $srcdir = catdir(absolutedir(dirname($0))); # catdir ensures local syntax
 my $blddir = catdir(absolutedir("."));         # catdir ensures local syntax
-my $dofile = abs2rel(catfile($srcdir, "util/dofile.pl"));
+my $dofile = abs2relx(catfile($srcdir, "util/dofile.pl"));
 
 my $local_config_envname = 'OPENSSL_LOCAL_CONFIG_DIR';
 
-$config{sourcedir} = abs2rel($srcdir);
-$config{builddir} = abs2rel($blddir);
+$config{sourcedir} = abs2relx($srcdir);
+$config{builddir} = abs2relx($blddir);
 
 # Collect reconfiguration information if needed
 my @argvcopy=@ARGV;
@@ -1209,7 +1218,7 @@ if ($^O ne "VMS") {
     open(PIPE, "$cc -dM -E -x c /dev/null 2>&1 |");
     while (<PIPE>) {
 	m/^#define\s+(\w+(?:\(\w+\))?)(?:\s+(.+))?/ or last;
-	$predefined{$1} = $2 // "";
+	$predefined{$1} = defined($2) ? $2 : "";
     }
     close(PIPE);
 
@@ -1342,7 +1351,7 @@ if ($builder eq "unified") {
         # Make sure the directories we're building in exists
         mkpath($dir);
 
-        my $res = abs2rel(absolutedir($dir), rel2abs($relativeto));
+        my $res = abs2relx(absolutedir($dir), rel2abs($relativeto));
         #print STDERR "DEBUG[cleandir]: $dir , $base => $res\n";
         return $res;
     }
@@ -1360,7 +1369,7 @@ if ($builder eq "unified") {
         # Make sure the directories we're building in exists
         mkpath($d);
 
-        my $res = abs2rel(catfile(absolutedir($d), $f), rel2abs($relativeto));
+        my $res = abs2relx(catfile(absolutedir($d), $f), rel2abs($relativeto));
         #print STDERR "DEBUG[cleanfile]: $d , $f => $res\n";
         return $res;
     }
@@ -1456,7 +1465,7 @@ if ($builder eq "unified") {
         # don't use it if the build tree is different.
         my $src_configdata = cleanfile($srcdir, "configdata.pm", $blddir);
 
-        push @{$config{build_infos}}, catfile(abs2rel($sourced, $blddir), $f);
+        push @{$config{build_infos}}, catfile(abs2relx($sourced, $blddir), $f);
         my $template =
             Text::Template->new(TYPE => 'FILE',
                                 SOURCE => catfile($sourced, $f),
@@ -1468,10 +1477,10 @@ if ($builder eq "unified") {
                                          target => \%target,
                                          disabled => \%disabled,
                                          withargs => \%withargs,
-                                         builddir => abs2rel($buildd, $blddir),
-                                         sourcedir => abs2rel($sourced, $blddir),
-                                         buildtop => abs2rel($blddir, $blddir),
-                                         sourcetop => abs2rel($srcdir, $blddir) },
+                                         builddir => abs2relx($buildd, $blddir),
+                                         sourcedir => abs2relx($sourced, $blddir),
+                                         buildtop => abs2relx($blddir, $blddir),
+                                         sourcetop => abs2relx($srcdir, $blddir) },
                                DELIMITERS => [ "{-", "-}" ]);
 
         # The top item of this stack has the following values
@@ -1579,7 +1588,7 @@ if ($builder eq "unified") {
                 my $lineiterator = shift;
                 my $target_kind = $1;
                 while (defined $lineiterator->()) {
-                    s|\R$||;
+                    s/\n\z//;
                     if (/^\s*ENDRAW\[((?:\\.|[^\\\]])+)\]\s*$/) {
                         die "ENDRAW doesn't match BEGINRAW"
                             if $1 ne $target_kind;
@@ -2690,7 +2699,7 @@ sub collect_from_file {
         my $saved_line = "";
         $_ = "";
         while (<$fh>) {
-            s|\R$||;
+            s/\n\z//;
             if (defined $line_concat) {
                 $_ = $line_concat->($saved_line, $_);
                 $saved_line = "";
@@ -2721,7 +2730,7 @@ sub collect_from_array {
         my $saved_line = "";
         $_ = "";
         while (defined($_ = shift @array)) {
-            s|\R$||;
+            s/\n\z//;
             if (defined $line_concat) {
                 $_ = $line_concat->($saved_line, $_);
                 $saved_line = "";
@@ -2746,7 +2755,7 @@ sub collect_information {
     my %collectors = @_;
 
     while(defined($_ = $lineiterator->())) {
-        s|\R$||;
+        s/\n\z//;
         my $found = 0;
         if ($collectors{"BEFORE"}) {
             $collectors{"BEFORE"}->($_);

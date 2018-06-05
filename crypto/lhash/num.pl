@@ -11,7 +11,7 @@
 while (<>)
 	{
 	next unless /^node/;
-	s|\R$||;                # Better chomp
+	s|\n\z||;                # Better chomp
 	@a=split;
 	$num{$a[3]}++;
 	}

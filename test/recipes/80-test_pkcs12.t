@@ -48,7 +48,7 @@ if (eval { require Win32::API; 1; }) {
     # UTF-8 locale...
 
     foreach(`locale -a`) {
-        s/\R$//;
+        s/\n\z//;
         if ($_ =~ m/^C\.UTF\-?8/i) {
             $ENV{LC_ALL} = $_;
             last;

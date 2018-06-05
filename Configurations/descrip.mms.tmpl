@@ -4,6 +4,16 @@
 {-
   use File::Spec::Functions qw/:DEFAULT abs2rel rel2abs/;
 
+  sub abs2relx {
+      my $path = shift;
+      my $base = shift;
+      my $ret = abs2rel($path,$base);
+      if ($ret eq '') {
+          $ret = '.';
+      }
+      return $ret;
+  }
+
   # Our prefix, claimed when speaking with the VSI folks Tuesday
   # January 26th 2016
   our $osslprefix = 'OSSL$';
@@ -32,7 +42,7 @@
   }
   sub move {
       my $f = catdir(@_);
-      my $b = abs2rel(rel2abs("."),rel2abs($f));
+      my $b = abs2relx(rel2abs("."),rel2abs($f));
       $sourcedir = catdir($b,$sourcedir)
           if !file_name_is_absolute($sourcedir);
       $builddir = catdir($b,$builddir)
@@ -537,6 +547,16 @@ configdata.pm : $(SRCDIR)Configure $(SRCDIR)config.com {- join(" ", @{$config{bu
   use File::Basename;
   use File::Spec::Functions qw/abs2rel rel2abs catfile catdir/;
 
+  sub abs2relx {
+      my $path = shift;
+      my $base = shift;
+      my $ret = abs2rel($path,$base);
+      if ($ret eq '') {
+          $ret = '.';
+      }
+      return $ret;
+  }
+
   sub generatesrc {
       my %args = @_;
       my $generator = join(" ", @{$args{generator}});
@@ -545,7 +565,7 @@ configdata.pm : $(SRCDIR)Configure $(SRCDIR)config.com {- join(" ", @{$config{bu
 
       if ($args{src} !~ /\.[sS]$/) {
           if ($args{generator}->[0] =~ m|^.*\.in$|) {
-	      my $dofile = abs2rel(rel2abs(catfile($config{sourcedir},
+	      my $dofile = abs2relx(rel2abs(catfile($config{sourcedir},
                                                    "util", "dofile.pl")),
                                    rel2abs($config{builddir}));
               return <<"EOF";
@@ -576,12 +596,12 @@ EOF
       # in the correct position (important when the object tree is other
       # than the source tree).
       my $forward = dirname($args{srcs}->[0]);
-      my $backward = abs2rel(rel2abs("."), rel2abs($forward));
-      my $objd = abs2rel(rel2abs(dirname($obj)), rel2abs($forward));
+      my $backward = abs2relx(rel2abs("."), rel2abs($forward));
+      my $objd = abs2relx(rel2abs(dirname($obj)), rel2abs($forward));
       my $objn = basename($obj);
       my $srcs =
           join(", ",
-               map { abs2rel(rel2abs($_), rel2abs($forward)) } @{$args{srcs}});
+               map { abs2relx(rel2abs($_), rel2abs($forward)) } @{$args{srcs}});
       my $ecflags = { lib => '$(LIB_CFLAGS)',
                       dso => '$(DSO_CFLAGS)',
                       bin => '$(BIN_CFLAGS)' } -> {$args{intent}};
@@ -638,13 +658,13 @@ EOF
       my $deps = join(", -\n\t\t", @deps);
       my $shlib_target = $disabled{shared} ? "" : $target{shared_target};
       my $ordinalsfile = defined($args{ordinals}) ? $args{ordinals}->[1] : "";
-      my $engine_opt = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $engine_opt = abs2relx(rel2abs(catfile($config{sourcedir},
                                                "VMS", "engine.opt")),
                                rel2abs($config{builddir}));
-      my $mkdef_pl = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $mkdef_pl = abs2relx(rel2abs(catfile($config{sourcedir},
                                              "util", "mkdef.pl")),
                              rel2abs($config{builddir}));
-      my $translatesyms_pl = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $translatesyms_pl = abs2relx(rel2abs(catfile($config{sourcedir},
                                                      "VMS", "translatesyms.pl")),
                                      rel2abs($config{builddir}));
       # The "[]" hack is because in .OPT files, each line inherits the
@@ -685,7 +705,7 @@ EOF
               : $unified_info{sharednames}->{$_}.".EXE"; } @{$args{deps}};
       my $deps = join(", -\n\t\t", @objs, @deps);
       my $shlib_target = $disabled{shared} ? "" : $target{shared_target};
-      my $engine_opt = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $engine_opt = abs2relx(rel2abs(catfile($config{sourcedir},
                                                "VMS", "engine.opt")),
                                rel2abs($config{builddir}));
       # The "[]" hack is because in .OPT files, each line inherits the
@@ -765,7 +785,7 @@ EOF
       my $script = $args{script};
       return "" if grep { $_ eq $script } @{$args{sources}}; # No overwrite!
       my $sources = join(" ", @{$args{sources}});
-      my $dofile = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $dofile = abs2relx(rel2abs(catfile($config{sourcedir},
                                            "util", "dofile.pl")),
                            rel2abs($config{builddir}));
       return <<"EOF";

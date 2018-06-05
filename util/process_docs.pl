@@ -99,8 +99,8 @@ foreach my $subdir (keys %{$options{subdir}}) {
 
         my $updir = updir();
         my $name = uc $podname;
-        my $suffix = { man  => ".$podinfo{section}".($options{suffix} // ""),
-                       html => ".html" } -> {$options{type}};
+        my $suffix = { man  => ".$podinfo{section}".(defined($options{suffix}) ? $options{suffix} : ""),
+                        html => ".html" } -> {$options{type}};
         my $generate = { man  => "pod2man --name=$name --section=$podinfo{section}$options{mansection} --center=OpenSSL --release=$config{version} \"$podpath\"",
                          html => "pod2html \"--podroot=$options{sourcedir}\" --htmldir=$updir --podpath=apps:crypto:ssl \"--infile=$podpath\" \"--title=$podname\""
                          } -> {$options{type}};

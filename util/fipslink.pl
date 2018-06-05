@@ -65,7 +65,7 @@ open my $sha1_res, '<', $fips_target.".sha1" or die "Get hash failure";
 $fips_hash=<$sha1_res>;
 close $sha1_res;
 unlink $fips_target.".sha1";
-$fips_hash =~ s|\R$||;          # Better chomp
+$fips_hash =~ s|\n\z||;          # Better chomp
 die "Get hash failure" if $? != 0;
 
 
@@ -103,8 +103,8 @@ sub check_hash
 	$hashfile = <IN>;
 	close IN;
 	$hashval = `$sha1_exe ${fips_libdir}/$filename`;
-	$hashfile =~ s|\R$||;    # Better chomp
-	$hashval =~ s|\R$||;     # Better chomp
+	$hashfile =~ s|\n\z||;    # Better chomp
+	$hashval =~ s|\n\z||;     # Better chomp
 	$hashfile =~ s/^.*=\s+//;
 	$hashval =~ s/^.*=\s+//;
 	die "Invalid hash syntax in file" if (length($hashfile) != 40);

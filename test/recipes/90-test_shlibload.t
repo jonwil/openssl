@@ -22,8 +22,8 @@ plan skip_all => "Test only supported in a shared build" if disabled("shared");
 
 plan tests => 3;
 
-my $libcrypto_idx = $unified_info{rename}->{libcrypto} // "libcrypto";
-my $libssl_idx = $unified_info{rename}->{libssl} // "libssl";
+my $libcrypto_idx = defined($unified_info{rename}->{libcrypto}) ? $unified_info{rename}->{libcrypto : "libcrypto";
+my $libssl_idx = defined($unified_info{rename}->{libssl}) ? $unified_info{rename}->{libssl} : "libssl";
 my $libcrypto =
     $unified_info{sharednames}->{$libcrypto_idx}.$target{shared_extension_simple};
 my $libssl =

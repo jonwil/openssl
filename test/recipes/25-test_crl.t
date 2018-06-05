@@ -36,7 +36,7 @@ sub compare1stline {
     my ($cmdarray, $str) = @_;
     my @lines = run(app($cmdarray), capture => 1);
 
-    return 1 if $lines[0] =~ m|^\Q${str}\E\R$|;
+    return 1 if $lines[0] =~ m|^\Q${str}\E\n\z|;
     note "Got      ", $lines[0];
     note "Expected ", $str;
     return 0;

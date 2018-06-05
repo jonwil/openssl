@@ -126,8 +126,8 @@ sub test_conf {
 
 sub cmp_text {
     return compare_text(@_, sub {
-        $_[0] =~ s/\R//g;
-        $_[1] =~ s/\R//g;
+        $_[0] =~ s/\n//g;
+        $_[1] =~ s/\n//g;
         return $_[0] ne $_[1];
     });
 }

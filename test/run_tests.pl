@@ -19,10 +19,18 @@ use File::Basename;
 use FindBin;
 use lib "$FindBin::Bin/../util/perl";
 use OpenSSL::Glob;
-use Module::Load::Conditional qw(can_load);
 
-my $TAP_Harness = can_load(modules => { 'TAP::Harness' => undef }) 
-    ? 'TAP::Harness' : 'OpenSSL::TAP::Harness';
+sub abs2relx {
+    my $path = shift;
+    my $base = shift;
+    my $ret = abs2rel($path,$base);
+    if ($ret eq '') {
+        $ret = '.';
+    }
+    return $ret;
+}
+
+my $TAP_Harness = 'OpenSSL::TAP::Harness';
 
 my $srctop = $ENV{SRCTOP} || $ENV{TOP};
 my $bldtop = $ENV{BLDTOP} || $ENV{TOP};
@@ -60,7 +68,7 @@ if ($list_mode) {
                    $_ } @tests;
     print join("\n", @tests), "\n";
 } else {
-    @tests = map { abs2rel($_, rel2abs(curdir())); } @tests;
+    @tests = map { abs2relx($_, rel2abs(curdir())); } @tests;
 
     my $harness = $TAP_Harness->new(\%tapargs);
     my $ret = $harness->runtests(sort @tests);

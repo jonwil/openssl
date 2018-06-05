@@ -37,7 +37,7 @@ foreach my $libname (@libnames) {
         *OSTDOUT = *STDOUT;
         open STDERR, ">", devnull();
         open STDOUT, ">", devnull();
-        my @nm_lines = map { s|\R$||; $_ } `nm -Pg $shlibpath 2> /dev/null`;
+        my @nm_lines = map { s/\n\z//; $_ } `nm -Pg $shlibpath 2> /dev/null`;
         close STDERR;
         close STDOUT;
         *STDERR = *OSTDERR;
@@ -49,7 +49,7 @@ foreach my $libname (@libnames) {
         my @def_lines;
         indir $bldtop => sub {
             my $mkdefpath = srctop_file("util", "mkdef.pl");
-            @def_lines = map { s|\R$||; $_ } `$^X $mkdefpath $libname linux 2> /dev/null`;
+            @def_lines = map { s/\n\z//; $_ } `$^X $mkdefpath $libname linux 2> /dev/null`;
             ok($? == 0, "running 'cd $bldtop; $^X $mkdefpath $libname linux' => $?");
         }, create => 0, cleanup => 0;
 

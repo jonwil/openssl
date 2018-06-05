@@ -357,6 +357,16 @@ configdata.pm: "$(SRCDIR)\Configure" {- join(" ", map { '"'.$_.'"' } @{$config{b
  use File::Basename;
  use File::Spec::Functions qw/:DEFAULT abs2rel rel2abs/;
 
+ sub abs2relx {
+     my $path = shift;
+     my $base = shift;
+     my $ret = abs2rel($path,$base);
+     if ($ret eq '') {
+         $ret = '.';
+     }
+     return $ret;
+ }
+
  # Helper function to figure out dependencies on libraries
  # It takes a list of library names and outputs a list of dependencies
  sub compute_lib_depends {
@@ -378,7 +388,7 @@ configdata.pm: "$(SRCDIR)\Configure" {- join(" ", map { '"'.$_.'"' } @{$config{b
 
       if ($target !~ /\.asm$/) {
           if ($args{generator}->[0] =~ m|^.*\.in$|) {
-              my $dofile = abs2rel(rel2abs(catfile($config{sourcedir},
+              my $dofile = abs2relx(rel2abs(catfile($config{sourcedir},
                                                    "util", "dofile.pl")),
                                    rel2abs($config{builddir}));
               return <<"EOF";
@@ -483,10 +493,10 @@ EOF
 		     (map { $_.$objext } @{$args{objs}}),
 		     compute_lib_depends(@{$args{deps}}));
      my $ordinalsfile = defined($args{ordinals}) ? $args{ordinals}->[1] : "";
-     my $mkdef_pl = abs2rel(rel2abs(catfile($config{sourcedir},
+     my $mkdef_pl = abs2relx(rel2abs(catfile($config{sourcedir},
 					    "util", "mkdef.pl")),
 			    rel2abs($config{builddir}));
-     my $mkrc_pl = abs2rel(rel2abs(catfile($config{sourcedir},
+     my $mkrc_pl = abs2relx(rel2abs(catfile($config{sourcedir},
 					   "util", "mkrc.pl")),
 			   rel2abs($config{builddir}));
      my $target = shlib_import($lib);
@@ -577,7 +587,7 @@ EOF
       my %args = @_;
       my $script = $args{script};
       my $sources = '"'.join('" "', @{$args{sources}}).'"';
-      my $dofile = abs2rel(rel2abs(catfile($config{sourcedir},
+      my $dofile = abs2relx(rel2abs(catfile($config{sourcedir},
                                            "util", "dofile.pl")),
                            rel2abs($config{builddir}));
       return <<"EOF";

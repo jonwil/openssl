@@ -65,6 +65,15 @@ use File::Spec::Functions qw/file_name_is_absolute curdir canonpath splitdir
 use File::Path 2.00 qw/rmtree mkpath/;
 use File::Basename;
 
+sub abs2relx {
+    my $path = shift;
+    my $base = shift;
+    my $ret = abs2rel($path,$base);
+    if ($ret eq '') {
+        $ret = '.';
+    }
+    return $ret;
+}
 
 # The name of the test.  This is set by setup() and is used in the other
 # functions to verify that setup() has been used.
@@ -854,7 +863,7 @@ sub __cwd {
     my %opts = @_;
     my $abscurdir = rel2abs(curdir());
     my $absdir = rel2abs($dir);
-    my $reverse = abs2rel($abscurdir, $absdir);
+    my $reverse = abs2relx($abscurdir, $absdir);
 
     # PARANOIA: if we're not moving anywhere, we do nothing more
     if ($abscurdir eq $absdir) {
@@ -887,7 +896,7 @@ sub __cwd {
     my @dirtags = sort keys %directories;
     foreach (@dirtags) {
 	if (!file_name_is_absolute($directories{$_})) {
-	    my $newpath = abs2rel(rel2abs($directories{$_}), rel2abs($dir));
+	    my $newpath = abs2relx(rel2abs($directories{$_}), rel2abs($dir));
 	    $tmp_directories{$_} = $newpath;
 	}
     }
@@ -897,7 +906,7 @@ sub __cwd {
     # process can use their values properly as well
     foreach (@direnv) {
 	if (!file_name_is_absolute($ENV{$_})) {
-	    my $newpath = abs2rel(rel2abs($ENV{$_}), rel2abs($dir));
+	    my $newpath = abs2relx(rel2abs($ENV{$_}), rel2abs($dir));
 	    $tmp_ENV{$_} = $newpath;
 	}
     }

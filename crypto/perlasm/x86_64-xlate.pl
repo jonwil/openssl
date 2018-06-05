@@ -90,7 +90,7 @@ my $nasm=0;
 
 if    ($flavour eq "mingw64")	{ $gas=1; $elf=0; $win64=1;
 				  $prefix=`echo __USER_LABEL_PREFIX__ | $ENV{CC} -E -P -`;
-				  $prefix =~ s|\R$||; # Better chomp
+				  $prefix =~ s|\n\z||; # Better chomp
 				}
 elsif ($flavour eq "macosx")	{ $gas=1; $elf=0; $prefix="_"; $decor="L\$"; }
 elsif ($flavour eq "masm")	{ $gas=0; $elf=0; $masm=$masmref; $win64=1; $decor="\$L\$"; }
@@ -891,7 +891,7 @@ ___
 }
 while(defined(my $line=<>)) {
 
-    $line =~ s|\R$||;           # Better chomp
+    $line =~ s|\n\z||;           # Better chomp
 
     $line =~ s|[#!].*$||;	# get rid of asm-style comments...
     $line =~ s|/\*.*\*/||;	# ... and C-style comments...

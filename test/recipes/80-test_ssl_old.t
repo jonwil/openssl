@@ -453,7 +453,7 @@ sub testssl {
 	my %ciphersuites = ();
 	foreach my $protocol (@protocols) {
 	    $ciphersuites{$protocol} =
-		[ map { s|\R||; split(/:/, $_) }
+		[ map { s|\n||; split(/:/, $_) }
 		  run(app(["openssl", "ciphers", "-s", $protocol,
 			   "ALL:$ciphers"]), capture => 1) ];
 	    $protocolciphersuitecount += scalar @{$ciphersuites{$protocol}};

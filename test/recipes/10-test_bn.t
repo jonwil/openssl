@@ -32,7 +32,7 @@ my $init = ok(run(test(["bntest"], stdout => $testresults)), 'initialize');
 	     @lines = <DATA>;
 	     close DATA;
 	 }
-	 map { s/\R//; } @lines;	# chomp(@lines);
+	 map { s/\n//; } @lines;	# chomp(@lines);
 
 	 plan tests => scalar grep(/^print /, @lines);
 

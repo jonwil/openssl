@@ -17,17 +17,17 @@ setup("test_passwd");
 
 plan tests => disabled("des") ? 4 : 6;
 
-ok(compare1stline([qw{openssl passwd password}], '^.{13}\R$'),
+ok(compare1stline([qw{openssl passwd password}], '^.{13}\n\z'),
    'crypt password with random salt') if !disabled("des");
-ok(compare1stline([qw{openssl passwd -1 password}], '^\$1\$.{8}\$.{22}\R$'),
+ok(compare1stline([qw{openssl passwd -1 password}], '^\$1\$.{8}\$.{22}\n\z'),
    'BSD style MD5 password with random salt');
-ok(compare1stline([qw{openssl passwd -apr1 password}], '^\$apr1\$.{8}\$.{22}\R$'),
+ok(compare1stline([qw{openssl passwd -apr1 password}], '^\$apr1\$.{8}\$.{22}\n\z'),
    'Apache style MD5 password with random salt');
-ok(compare1stline([qw{openssl passwd -salt xx password}], '^xxj31ZMTZzkVA\R$'),
+ok(compare1stline([qw{openssl passwd -salt xx password}], '^xxj31ZMTZzkVA\n\z'),
    'crypt password with salt xx') if !disabled("des");
-ok(compare1stline([qw{openssl passwd -salt xxxxxxxx -1 password}], '^\$1\$xxxxxxxx\$UYCIxa628\.9qXjpQCjM4a\.\R$'),
+ok(compare1stline([qw{openssl passwd -salt xxxxxxxx -1 password}], '^\$1\$xxxxxxxx\$UYCIxa628\.9qXjpQCjM4a\.\n\z'),
    'BSD style MD5 password with salt xxxxxxxx');
-ok(compare1stline([qw{openssl passwd -salt xxxxxxxx -apr1 password}], '^\$apr1\$xxxxxxxx\$dxHfLAsjHkDRmG83UXe8K0\R$'),
+ok(compare1stline([qw{openssl passwd -salt xxxxxxxx -apr1 password}], '^\$apr1\$xxxxxxxx\$dxHfLAsjHkDRmG83UXe8K0\n\z'),
    'Apache style MD5 password with salt xxxxxxxx');
 
 

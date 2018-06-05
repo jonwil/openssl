@@ -108,7 +108,7 @@ sub extract_pod_info {
 
     my %podinfo = ( section => $defaults{section});
     while(<$input>) {
-        s|\R$||;
+        s|\n\z||;
         if (m|^=for\s+comment\s+openssl_manual_section:\s*([0-9])\s*$|) {
             print STDERR "DEBUG: Found man section number $1\n"
                 if $defaults{debug};

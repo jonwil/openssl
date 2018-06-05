@@ -469,7 +469,7 @@ sub do_defs
 
 		print STDERR "DEBUG: parsing ----------\n" if $debug;
 		while(<IN>) {
-			s|\R$||; # Better chomp
+			s|\n\z||; # Better chomp
 			if($parens > 0) {
 				#Inside a DEPRECATEDIN
 				$stored_multiline .= $_;
@@ -1358,7 +1358,7 @@ sub load_numbers
 
 	open(IN,"<$name") || die "unable to open $name:$!\n";
 	while (<IN>) {
-		s|\R$||;        # Better chomp
+		s|\n\z||;        # Better chomp
 		s/#.*$//;
 		next if /^\s*$/;
 		@a=split;
