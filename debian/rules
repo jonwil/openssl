@@ -18,10 +18,8 @@ export VERSION=$(shell dpkg-parsechangelog | grep '^Version:' | sed -e 's/^.*://
 # The binary architeture
 DEB_HOST_ARCH = $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
-CONFARGS  = --prefix=/usr --openssldir=/usr/lib/ssl no-idea no-mdc2 no-rc5 zlib  enable-tlsext
+CONFARGS  = --prefix=/usr --openssldir=/usr/lib/ssl no-idea no-mdc2 no-rc5 no-zlib no-ssl3 enable-unit-test no-ssl3-method enable-rfc3779 enable-cms
 OPT_alpha = ev4 ev5
-OPT_i386  = i486 i586 i686/cmov
-OPT_sparc = v8 v9
 ARCHOPTS  = OPT_$(DEB_HOST_ARCH)
 OPTS      = $($(ARCHOPTS))
 WANTED_LIBC_VERSION = 2.3.1-10
