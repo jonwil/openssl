@@ -34,6 +34,7 @@ endif
 clean:
 	rm -rf build_shared
 	rm -f doc/openssl.pod doc/crypto.pod doc/ssl.pod
+	HASHBANGPERL=/usr/bin/perl ./Configure shared $(CONFARGS) debian-$(DEB_HOST_ARCH)
 	make distclean
 	dh_clean
 
