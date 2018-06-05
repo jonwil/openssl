@@ -19,20 +19,49 @@ export VERSION=$(shell dpkg-parsechangelog | grep '^Version:' | sed -e 's/^.*://
 DEB_HOST_ARCH = $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
 CONFARGS  = --prefix=/usr --openssldir=/usr/lib/ssl no-idea no-mdc2 no-rc5 no-zlib no-ssl3 enable-unit-test no-ssl3-method enable-rfc3779 enable-cms
+OPT_alpha = ev4 ev5
+ARCHOPTS  = OPT_$(DEB_HOST_ARCH)
+OPTS      = $($(ARCHOPTS))
 WANTED_LIBC_VERSION = 2.3.1-10
 
 build:
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		mkdir build_$$opt; \
+		cd build_$$opt ; \
+		../Configure shared $(CONFARGS) debian-$(DEB_HOST_ARCH)-$$opt; \
+		cd .. ;\
+	done
+	mkdir build_static; cd build_static; ../Configure no-shared $(CONFARGS) debian-$(DEB_HOST_ARCH)
 	mkdir build_shared; cd build_shared; HASHBANGPERL=/usr/bin/perl ../Configure shared $(CONFARGS) debian-$(DEB_HOST_ARCH)
+	make -C build_static all
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		make -C build_$$opt all; \
+	done
 	ln -sf apps/openssl.pod crypto/crypto.pod ssl/ssl.pod doc/
 	make -C build_shared all
 ifneq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 	@echo Skipping tests
 else
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		make -C build_$$opt test HARNESS_VERBOSE=yes; \
+	done
+	make -C build_static test HARNESS_VERBOSE=yes
 	make -C build_shared test HARNESS_VERBOSE=yes
 endif
 
 clean:
-	rm -rf build_shared
+	rm -rf build_static build_shared
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		rm -rf build_$$opt; \
+	done
 	rm -f doc/openssl.pod doc/crypto.pod doc/ssl.pod
 	HASHBANGPERL=/usr/bin/perl ./Configure shared $(CONFARGS) debian-$(DEB_HOST_ARCH)
 	make distclean
@@ -43,12 +72,19 @@ binary-arch:	build
 	dh_clean -k
 	dh_installdirs -a
 	make -C build_shared install DESTDIR=`pwd`/debian/tmp
+	cp -pf build_static/libcrypto.a debian/tmp/usr/lib/libcrypto.a
+	cp -pf build_static/libssl.a debian/tmp/usr/lib/libssl.a
 	mkdir -p debian/tmp/etc/ssl
 	mv debian/tmp/usr/lib/ssl/{certs,openssl.cnf,private} debian/tmp/etc/ssl/
 	ln -s /etc/ssl/{certs,openssl.cnf,private} debian/tmp/usr/lib/ssl/
 	cp -pf debian/tmp/usr/lib/libcrypto.so.* debian/libcrypto1.1-udeb/usr/lib/
 	cp -pf debian/tmp/usr/lib/libssl.so.* debian/libssl1.1-udeb/usr/lib/
 	cp -auv build_shared/lib*.so* debian/tmp/usr/lib/
+	for opt in $(OPTS); \
+		do set -xe; \
+		mkdir -p debian/tmp/usr/lib/$$opt; \
+		cp -auv build_$$opt/lib*.so* debian/tmp/usr/lib/$$opt/; \
+	done
 	mkdir -p debian/tmp/usr/include/openssl
 	mv debian/tmp/usr/include/openssl/opensslconf.h debian/tmp/usr/include/openssl/
 	dh_install -a
