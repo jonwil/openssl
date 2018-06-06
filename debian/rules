@@ -67,6 +67,8 @@ clean:
 	make distclean
 	dh_clean
 
+binary:	binary-arch
+
 binary-arch:	build
 	dh_testroot -a
 	dh_clean -k
