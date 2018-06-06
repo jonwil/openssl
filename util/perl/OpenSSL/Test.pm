@@ -62,7 +62,7 @@ use File::Copy;
 use File::Spec::Functions qw/file_name_is_absolute curdir canonpath splitdir
                              catdir catfile splitpath catpath devnull abs2rel
                              rel2abs/;
-use File::Path 2.00 qw/rmtree mkpath/;
+use File::Path qw/rmtree mkpath/;
 use File::Basename;
 
 sub abs2relx {
