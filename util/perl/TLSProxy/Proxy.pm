@@ -19,7 +19,6 @@ use TLSProxy::ClientHello;
 use TLSProxy::ServerHello;
 use TLSProxy::ServerKeyExchange;
 use TLSProxy::NewSessionTicket;
-use Time::HiRes qw/usleep/;
 
 my $have_IPv6 = 0;
 my $IP_factory;
@@ -325,7 +324,7 @@ sub clientstart
         die "exit code $? from server process\n" if $? != 0;
     } else {
         # Give s_server sufficient time to finish what it was doing
-        usleep(250000);
+        sleep 1;
     }
     die "clientpid is zero\n" if $self->clientpid == 0;
     print "Waiting for client process to close: ".$self->clientpid."\n";

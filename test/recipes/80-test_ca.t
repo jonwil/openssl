@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 use POSIX;
-use File::Path 2.00 qw/rmtree/;
+use File::Path qw/rmtree/;
 use OpenSSL::Test qw/:DEFAULT cmdstr srctop_file/;
 
 setup("test_ca");
