@@ -87,7 +87,7 @@ binary-arch:	build
 	done
 	mkdir -p debian/tmp/usr/include/openssl
 	mv debian/tmp/usr/include/openssl/opensslconf.h debian/tmp/usr/include/openssl/
-	dh_install -a
+	dh_movefiles -a
 	dh_installdocs -a
 	dh_installchangelogs CHANGES
 	dh_installman -a
