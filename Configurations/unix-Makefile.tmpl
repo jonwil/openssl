@@ -298,6 +298,7 @@ clean: libclean
 	$(RM) openssl.pc libcrypto.pc libssl.pc
 	-$(RM) `find . -type l -a \! -path "./.git/*"`
 	$(RM) $(TARFILE)
+	$(RM) build
 
 distclean: clean
 	$(RM) configdata.pm

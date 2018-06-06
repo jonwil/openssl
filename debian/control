@@ -61,7 +61,6 @@ Description: ssl shared library - udeb
 Package: libssl-dev
 Section: libdevel
 Architecture: any
-Suggests: libssl-doc
 Depends: libssl1.1 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libssl1.0-dev
 Description: Secure Sockets Layer toolkit - development files
@@ -71,14 +70,3 @@ Description: Secure Sockets Layer toolkit - development files
  .
  It contains development libraries, header files, and manpages for libssl
  and libcrypto.
-
-Package: libssl-doc
-Section: doc
-Architecture: all
-Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends}
-Description: Secure Sockets Layer toolkit - development documentation
- This package is part of the OpenSSL project's implementation of the SSL
- and TLS cryptographic protocols for secure communication over the
- Internet.
- .
- It contains manpages and demo files for libssl and libcrypto.

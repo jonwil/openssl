@@ -54,6 +54,7 @@ build:
 #	make -C build_static test HARNESS_VERBOSE=yes
 #	make -C build_shared test HARNESS_VERBOSE=yes
 #endif
+	touch build
 
 clean:
 	rm -rf build_static build_shared
@@ -88,7 +89,6 @@ binary-arch:	build
 		cp -auv build_$$opt/lib*.so* debian/tmp/usr/lib/$$opt/; \
 	done
 	mkdir -p debian/tmp/usr/include/openssl
-	mv debian/tmp/usr/include/openssl/opensslconf.h debian/tmp/usr/include/openssl/
 	dh_movefiles -a
 	dh_installdocs -a
 	dh_installchangelogs CHANGES
